@@ -23,7 +23,11 @@ defmodule IcebreakerWeb.Router do
   scope "/api", IcebreakerWeb.Api do
     pipe_through :api
 
+    post "/init", UserController, :init_verify
+    post "/verify", UserController, :verify_token
     post "/register", UserController, :register
+
+    resources "/locations", LocationController, except: [:new, :edit]
   end
 
   # Enables LiveDashboard only for development

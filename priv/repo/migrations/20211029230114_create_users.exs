@@ -6,6 +6,8 @@ defmodule Icebreaker.Repo.Migrations.CreateUsers do
       add :phone, :string
       add :name, :string
       add :birthdate, :naive_datetime
+      add :verify_token, :string
+      add :activated, :boolean, default: false
 
       timestamps()
     end

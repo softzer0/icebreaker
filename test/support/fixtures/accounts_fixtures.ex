@@ -24,4 +24,20 @@ defmodule Icebreaker.AccountsFixtures do
 
     person
   end
+
+  @doc """
+  Generate a location.
+  """
+  def location_fixture(attrs \\ %{}) do
+    {:ok, location} =
+      attrs
+      |> Enum.into(%{
+        alt: "some alt",
+        lat: "some lat",
+        lon: "some lon"
+      })
+      |> Icebreaker.Accounts.create_location()
+
+    location
+  end
 end
