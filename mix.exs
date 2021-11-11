@@ -49,7 +49,8 @@ defmodule Icebreaker.MixProject do
       {:gettext, "~> 0.18"},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
-      {:ex_twilio, "~> 0.9.1"}
+      {:ex_twilio, "~> 0.9.1"},
+      {:guardian, "~> 2.0"}
     ]
   end
 

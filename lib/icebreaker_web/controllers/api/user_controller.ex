@@ -2,6 +2,7 @@ defmodule IcebreakerWeb.Api.UserController do
   use IcebreakerWeb, :controller
   alias Icebreaker.Accounts
   alias Icebreaker.Base.{Sms, Token}
+  alias Accounts.User
 
   require Logger
 
@@ -24,18 +25,30 @@ defmodule IcebreakerWeb.Api.UserController do
   def init_verify(conn, %{"phone" => phone}) do
     with token <- Token.generate(),
          {:ok, user} <- Accounts.create_user(%{phone: phone}),
-         {:ok, message} <- Sms.send_token(phone, token),
+         {:ok, _message} <- Sms.send_token(phone, token),
          {:ok, user} <- Accounts.update_user(user, %{verify_token: token}) do
-      Logger.info(user)
-      Logger.info(message)
-
       conn
       |> json(%{user: user})
     end
   end
 
-  def verify_token(conn, %{"token" => token}) do
-    conn
-    |> json(%{token: token})
+  def verify_token(conn, %{"phone" => phone, "token" => token}) do
+    with %User{} = user <- Accounts.get_user_by_phone(phone),
+         true <- match_token?(user.verify_token, token),
+         {:ok, user} <- Accounts.update_user(user, %{activated: true}) do
+          # TODO: Sign in user if everything is okay
+      conn
+      |> json(%{user: user})
+    end
   end
+
+  def login(conn, _params) do
+
+    conn
+    |> json("Ok")
+  end
+
+  # * Private helpers
+
+  defp match_token?(user_token, token), do: user_token == token
 end

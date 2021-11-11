@@ -53,6 +53,10 @@ config :ex_twilio,
   phone_number: System.get_env("TWILIO_PHONE_NUMBER"),
   workspace_sid: System.get_env("TWILIO_WORKSPACE_SID")
 
+config :icebreaker, Icebreaker.Base.Guardian,
+  issuer: "icebreaker",
+  secret_key: "U6cEki47n+IbOkcqGjMg96AF28DNpME2bxu5iwquvKfl5fUaab8uqm2BQHjIglaI"
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"

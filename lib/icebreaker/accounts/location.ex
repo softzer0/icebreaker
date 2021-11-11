@@ -6,7 +6,7 @@ defmodule Icebreaker.Accounts.Location do
     field :alt, :string
     field :lat, :string
     field :lon, :string
-    field :user_id, :id
+    belongs_to :user, Icebreaker.Accounts.User
 
     timestamps()
   end
@@ -14,7 +14,7 @@ defmodule Icebreaker.Accounts.Location do
   @doc false
   def changeset(location, attrs) do
     location
-    |> cast(attrs, [:lon, :lat, :alt])
+    |> cast(attrs, [:lon, :lat, :alt, :user_id])
     |> validate_required([:lon, :lat, :alt])
   end
 end

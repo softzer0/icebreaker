@@ -7,6 +7,7 @@ defmodule Icebreaker.Accounts do
   alias Icebreaker.Repo
 
   alias Icebreaker.Accounts.User
+  alias Icebreaker.Accounts.Session
 
   @doc """
   Returns the list of users.
@@ -36,6 +37,7 @@ defmodule Icebreaker.Accounts do
 
   """
   def get_user!(id), do: Repo.get!(User, id)
+  def get_user_by_phone(phone), do: Repo.get_by(User, phone: phone)
 
   @doc """
   Creates a user.
@@ -197,4 +199,6 @@ defmodule Icebreaker.Accounts do
   def change_location(%Location{} = location, attrs \\ %{}) do
     Location.changeset(location, attrs)
   end
+
+  def set_token(%Session{} = session, attrs \\ %{}), do: Session.changeset(session, attrs)
 end
