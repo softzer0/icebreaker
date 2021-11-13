@@ -50,7 +50,8 @@ defmodule Icebreaker.MixProject do
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
       {:ex_twilio, "~> 0.9.1"},
-      {:guardian, "~> 2.0"}
+      {:guardian, "~> 2.0"},
+      {:geo_postgis, "~> 3.4"}
     ]
   end
 

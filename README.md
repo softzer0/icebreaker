@@ -22,3 +22,14 @@ Ready to run in production? Please [check our deployment guides](https://hexdocs
 ---
 
 https://docs.google.com/document/d/1beooZyyQMHJnwG9HwmU5EDhhW_gIpOqTMkCFHLBG3zg
+
+## API Usage
+
+```
+post "api/init"
+```
+Body: "phone": "+381 6X XXX XXX"
+
+```
+post "api/verify"
+```

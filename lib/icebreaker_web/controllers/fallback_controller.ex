@@ -24,10 +24,11 @@ defmodule IcebreakerWeb.FallbackController do
     |> render(:"404")
   end
 
-  def call(conn, uncaught) do
-    Logger.warn(uncaught)
+  # def call(conn, uncaught) do
+  #   Logger.warn("Error: #{inspect uncaught}")
 
-    conn
-    |> render(:"500")
-  end
+  #   conn
+  #   |> put_status(500)
+  #   |> json(%{error: 500})
+  # end
 end

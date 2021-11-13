@@ -1,23 +1,12 @@
 defmodule IcebreakerWeb.Api.UserController do
   use IcebreakerWeb, :controller
   alias Icebreaker.Accounts
-  alias Icebreaker.Base.{Sms, Token}
+  alias Icebreaker.Base.{Sms, Token, Guardian}
   alias Accounts.User
 
   require Logger
 
   action_fallback IcebreakerWeb.FallbackController
-
-  def register(conn, %{"user" => user_params}) do
-    case Accounts.create_user(user_params) do
-      {:ok, user} ->
-        conn
-        |> render("show.json", user)
-
-      {:error, _} ->
-        conn
-    end
-  end
 
   @doc """
   Used when user signs up for the very first time
@@ -34,21 +23,32 @@ defmodule IcebreakerWeb.Api.UserController do
 
   def verify_token(conn, %{"phone" => phone, "token" => token}) do
     with %User{} = user <- Accounts.get_user_by_phone(phone),
-         true <- match_token?(user.verify_token, token),
-         {:ok, user} <- Accounts.update_user(user, %{activated: true}) do
-          # TODO: Sign in user if everything is okay
+         true <- not user.activated and user.verify_token === token,
+         {:ok, user} <- Accounts.update_user(user, %{activated: true, verify_token: nil}),
+         conn <- Guardian.Plug.sign_in(conn, user),
+         {:ok, jwt_access, _claims} <- Guardian.encode_and_sign(user, %{}, token_type: "access", ttl: {1, :hour}),
+         {:ok, jwt_refresh, _claims} <- Guardian.encode_and_sign(user, %{}, token_type: "refresh", ttl: {90, :days}) do
+      # TODO: Save refresh token in sessions for the user
       conn
-      |> json(%{user: user})
+      |> json(%{token: jwt_access, refresh: jwt_refresh})
+    else
+      nil ->
+        conn |> json(%{error: "User not found"})
+
+      false ->
+        conn |> json(%{error: "Token doesn't match or already verified"})
+
+      {:error, reason} ->
+        conn
+        |> json(error: reason)
     end
   end
 
-  def login(conn, _params) do
-
-    conn
-    |> json("Ok")
+  def change_user_data(conn, %{"name" => name, "birthdate" => birthdate}) do
+    with %User{} = user <- Guardian.Plug.current_resource(conn),
+         {:ok, user} <- Accounts.update_user(user, %{name: name, birthdate: birthdate}) do
+      conn
+      |> render("show.json", %{user: user})
+    end
   end
-
-  # * Private helpers
-
-  defp match_token?(user_token, token), do: user_token == token
 end

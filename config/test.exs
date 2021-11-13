@@ -11,7 +11,9 @@ config :icebreaker, Icebreaker.Repo,
   database: "icebreaker_test#{System.get_env("MIX_TEST_PARTITION")}",
   hostname: "localhost",
   pool: Ecto.Adapters.SQL.Sandbox,
-  pool_size: 10
+  pool_size: 10,
+  adapter: Ecto.Adapters.Postgres,
+  types: MyApp.PostgresTypes
 
 # We don't run a server during test. If one is required,
 # you can enable the server option below.

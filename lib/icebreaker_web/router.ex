@@ -1,6 +1,5 @@
 defmodule IcebreakerWeb.Router do
   use IcebreakerWeb, :router
-  alias IcebreakerWeb.Plug.Auth
 
   # TODO: Add Guardian pipeline
 
@@ -17,8 +16,16 @@ defmodule IcebreakerWeb.Router do
     plug :accepts, ["json"]
   end
 
-  pipeline :session do
-    plug Auth
+  pipeline :maybe_auth do
+    plug Icebreaker.Base.Guardian.Pipeline
+  end
+
+  pipeline :ensure_auth do
+    plug Guardian.Plug.EnsureAuthenticated
+  end
+
+  pipeline :ensure_not_auth do
+    plug Guardian.Plug.EnsureNotAuthenticated
   end
 
   scope "/", IcebreakerWeb do
@@ -30,15 +37,15 @@ defmodule IcebreakerWeb.Router do
   scope "/api", IcebreakerWeb.Api do
     pipe_through :api
 
+    pipe_through :ensure_not_auth
+
     # * Register user
     post "/init", UserController, :init_verify
     post "/verify", UserController, :verify_token
-    post "/register", UserController, :register
 
-    pipe_through :session
+    pipe_through [:maybe_auth, :ensure_auth]
 
-    # * Login user
-    post "/login", UserController, :login
+    post "/change", UserController, :change_user_data
 
     resources "/locations", LocationController, except: [:new, :edit]
   end

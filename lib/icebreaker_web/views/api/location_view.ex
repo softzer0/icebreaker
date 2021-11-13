@@ -13,9 +13,7 @@ defmodule IcebreakerWeb.Api.LocationView do
   def render("location.json", %{location: location}) do
     %{
       id: location.id,
-      lon: location.lon,
-      lat: location.lat,
-      alt: location.alt
+      coods: location.coords
     }
   end
 end
