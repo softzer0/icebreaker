@@ -3,8 +3,8 @@ defmodule Icebreaker.Repo.Migrations.CreateSessions do
 
   def change do
     create table(:sessions) do
-      add :token, :string
-      add :user_id, references(:users, on_delete: :nothing)
+      add :token, :string, size: 339
+      add :user_id, references(:users, on_delete: :delete_all)
 
       timestamps()
     end

@@ -43,6 +43,8 @@ defmodule IcebreakerWeb.Router do
     post "/init", UserController, :init_verify
     post "/verify", UserController, :verify_token
 
+    post "/refresh_token", UserController, :refresh_token
+
     pipe_through [:maybe_auth, :ensure_auth]
 
     post "/change", UserController, :change_user_data

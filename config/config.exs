@@ -55,7 +55,8 @@ config :ex_twilio,
 
 config :icebreaker, Icebreaker.Base.Guardian,
   issuer: "icebreaker",
-  secret_key: "U6cEki47n+IbOkcqGjMg96AF28DNpME2bxu5iwquvKfl5fUaab8uqm2BQHjIglaI"
+  secret_key: "U6cEki47n+IbOkcqGjMg96AF28DNpME2bxu5iwquvKfl5fUaab8uqm2BQHjIglaI",
+  token_ttl: %{"access" => {1, :hour}, "refresh" => {90, :days}}
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

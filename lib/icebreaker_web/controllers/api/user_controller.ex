@@ -17,7 +17,7 @@ defmodule IcebreakerWeb.Api.UserController do
          {:ok, _message} <- Sms.send_token(phone, token),
          {:ok, user} <- Accounts.update_user(user, %{verify_token: token}) do
       conn
-      |> json(%{user: user})
+      |> render("show.json", %{user: user})
     end
   end
 
@@ -26,9 +26,10 @@ defmodule IcebreakerWeb.Api.UserController do
          true <- not user.activated and user.verify_token === token,
          {:ok, user} <- Accounts.update_user(user, %{activated: true, verify_token: nil}),
          conn <- Guardian.Plug.sign_in(conn, user),
-         {:ok, jwt_access, _claims} <- Guardian.encode_and_sign(user, %{}, token_type: "access", ttl: {1, :hour}),
-         {:ok, jwt_refresh, _claims} <- Guardian.encode_and_sign(user, %{}, token_type: "refresh", ttl: {90, :days}) do
-      # TODO: Save refresh token in sessions for the user
+         {:ok, jwt_access, _claims} <- Guardian.encode_and_sign(user, %{}, token_type: "access"),
+         {:ok, jwt_refresh, _claims} <- Guardian.encode_and_sign(user, %{}, token_type: "refresh") do
+      Accounts.save_session(user, jwt_refresh)
+
       conn
       |> json(%{token: jwt_access, refresh: jwt_refresh})
     else
@@ -40,7 +41,18 @@ defmodule IcebreakerWeb.Api.UserController do
 
       {:error, reason} ->
         conn
-        |> json(error: reason)
+        |> json(%{error: reason})
+    end
+  end
+
+  def refresh_token(conn, %{"refresh" => refresh}) do
+    with {:ok, _old_stuff, {access, _new_claims}} <- Guardian.exchange(refresh, "refresh", "access") do
+      conn
+      |> json(%{token: access})
+    else
+      {:error, _} ->
+        conn
+        |> json(%{error: "Invalid token provided"})
     end
   end
 

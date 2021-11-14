@@ -7,7 +7,6 @@ defmodule Icebreaker.Accounts do
   alias Icebreaker.Repo
 
   alias Icebreaker.Accounts.User
-  alias Icebreaker.Accounts.Session
 
   @doc """
   Returns the list of users.
@@ -200,5 +199,8 @@ defmodule Icebreaker.Accounts do
     Location.changeset(location, attrs)
   end
 
-  def set_token(%Session{} = session, attrs \\ %{}), do: Session.changeset(session, attrs)
+  def save_session(%User{} = user, token) do
+    Ecto.build_assoc(user, :sessions, %{token: token})
+    |> Repo.insert()
+  end
 end

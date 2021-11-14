@@ -8,7 +8,9 @@ defmodule IcebreakerWeb.Api.UserView do
   def render("user.json", %{user: user}) do
     %{
       name: user.name,
-      age: user.birthdate
+      birthdate: user.birthdate,
+      phone: user.phone,
+      activated: user.activated
     }
   end
 end
