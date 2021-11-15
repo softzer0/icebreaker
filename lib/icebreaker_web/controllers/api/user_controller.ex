@@ -56,11 +56,20 @@ defmodule IcebreakerWeb.Api.UserController do
     end
   end
 
-  def change_user_data(conn, %{"name" => name, "birthdate" => birthdate}) do
+  def change_user_data(conn, %{"name" => name, "birthdate" => birthdate, "selfie" => b64_selfie}) do
     with %User{} = user <- Guardian.Plug.current_resource(conn),
-         {:ok, user} <- Accounts.update_user(user, %{name: name, birthdate: birthdate}) do
+         {:ok, user} <- Accounts.update_user(user, %{name: name, birthdate: birthdate}),
+         selfie_binary_data <- Base.decode64!(b64_selfie),
+         :jpeg <- ExImageInfo.seems?(selfie_binary_data),
+         {_, 480, 480, _} <- ExImageInfo.info(selfie_binary_data) do
+      File.write!(Application.app_dir(:icebreaker, "priv/selfies/#{user.id}.jpg"), selfie_binary_data)
+
       conn
       |> render("show.json", %{user: user})
+    else
+      _ ->
+        conn
+        |> json(%{error: "Invalid data provided"})
     end
   end
 end

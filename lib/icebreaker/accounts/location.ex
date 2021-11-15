@@ -11,6 +11,6 @@ defmodule Icebreaker.Accounts.Location do
   @doc false
   def changeset(location, attrs) do
     location
-    |> cast(attrs, [:coords, :user_id])
+    |> cast(attrs, [:init_coords, :coords, :user_id])
   end
 end

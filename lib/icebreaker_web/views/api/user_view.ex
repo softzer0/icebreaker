@@ -9,8 +9,7 @@ defmodule IcebreakerWeb.Api.UserView do
     %{
       name: user.name,
       birthdate: user.birthdate,
-      phone: user.phone,
-      activated: user.activated
+      phone: user.phone
     }
   end
 end

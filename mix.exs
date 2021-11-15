@@ -51,7 +51,8 @@ defmodule Icebreaker.MixProject do
       {:plug_cowboy, "~> 2.5"},
       {:ex_twilio, "~> 0.9.1"},
       {:guardian, "~> 2.0"},
-      {:geo_postgis, "~> 3.4"}
+      {:geo_postgis, "~> 3.4"},
+      {:ex_image_info, "~> 0.2.4"}
     ]
   end
 
