@@ -58,6 +58,10 @@ config :icebreaker, Icebreaker.Base.Guardian,
   secret_key: "U6cEki47n+IbOkcqGjMg96AF28DNpME2bxu5iwquvKfl5fUaab8uqm2BQHjIglaI",
   token_ttl: %{"access" => {1, :hour}, "refresh" => {90, :days}}
 
+config :ex_aws, :config, bucket_name: "softzer0-icebreaker"
+
+config :ex_aws, :s3, region: "us-east-2"
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"

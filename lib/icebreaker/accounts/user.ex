@@ -9,6 +9,8 @@ defmodule Icebreaker.Accounts.User do
     field :verify_token, :string
     field :birthdate, :naive_datetime
     field :activated, :boolean, default: false
+    field :face_id, :string
+    field :last_selfie_id, :string
     has_many :sessions, Icebreaker.Accounts.Session
     has_one :location, Icebreaker.Accounts.Location
 
@@ -18,7 +20,7 @@ defmodule Icebreaker.Accounts.User do
   @doc false
   def changeset(user, attrs) do
     user
-    |> cast(attrs, [:phone, :name, :birthdate, :verify_token, :activated])
+    |> cast(attrs, [:phone, :name, :birthdate, :verify_token, :activated, :face_id, :last_selfie_id])
     |> validate_required([:phone])
     |> unique_constraint(:phone)
   end

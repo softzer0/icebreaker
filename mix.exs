@@ -52,7 +52,13 @@ defmodule Icebreaker.MixProject do
       {:ex_twilio, "~> 0.9.1"},
       {:guardian, "~> 2.0"},
       {:geo_postgis, "~> 3.4"},
-      {:ex_image_info, "~> 0.2.4"}
+      {:ex_aws, "~> 2.0"},
+      {:ex_aws_s3, "~> 2.0"},
+      {:ex_aws_rekognition, "~> 0.6.0"},
+      {:poison, "~> 3.0"},
+      {:hackney, "~> 1.9"},
+      {:sweet_xml, "~> 0.6.6"},
+      {:uuid, "~> 1.1"}
     ]
   end
 

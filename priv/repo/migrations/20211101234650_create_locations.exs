@@ -7,6 +7,7 @@ defmodule Icebreaker.Repo.Migrations.CreateLocations do
 
       timestamps()
     end
+
     execute("CREATE EXTENSION IF NOT EXISTS postgis;")
     execute("SELECT AddGeometryColumn ('locations','init_coords',4326,'POINTZ',3);")
     execute("SELECT AddGeometryColumn ('locations','coords',4326,'POINTZ',3);")

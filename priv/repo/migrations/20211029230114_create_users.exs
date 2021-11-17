@@ -8,6 +8,8 @@ defmodule Icebreaker.Repo.Migrations.CreateUsers do
       add :birthdate, :naive_datetime
       add :verify_token, :string
       add :activated, :boolean, default: false
+      add :face_id, :string, size: 36
+      add :last_selfie_id, :string, size: 36
 
       timestamps()
     end
