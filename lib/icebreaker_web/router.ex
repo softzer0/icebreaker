@@ -49,7 +49,8 @@ defmodule IcebreakerWeb.Router do
 
     post "/change", UserController, :change_user_data
 
-    resources "/locations", LocationController, except: [:new, :edit]
+    post "/locations", LocationController, :create
+    patch "/locations", LocationController, :update
   end
 
   # Enables LiveDashboard only for development

@@ -15,9 +15,10 @@ defmodule Icebreaker.Application do
       # Start the PubSub system
       {Phoenix.PubSub, name: Icebreaker.PubSub},
       # Start the Endpoint (http/https)
-      IcebreakerWeb.Endpoint
+      IcebreakerWeb.Endpoint,
       # Start a worker by calling: Icebreaker.Worker.start_link(arg)
       # {Icebreaker.Worker, arg}
+      Icebreaker.CreateCollection
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

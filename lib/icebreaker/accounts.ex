@@ -105,18 +105,18 @@ defmodule Icebreaker.Accounts do
 
   alias Icebreaker.Accounts.Location
 
-  @doc """
-  Returns the list of locations.
+  # @doc """
+  # Returns the list of locations.
 
-  ## Examples
+  # ## Examples
 
-      iex> list_locations()
-      [%Location{}, ...]
+  #     iex> list_locations()
+  #     [%Location{}, ...]
 
-  """
-  def list_locations do
-    Repo.all(Location)
-  end
+  # """
+  # def list_locations do
+  #   Repo.all(Location)
+  # end
 
   @doc """
   Gets a single location.
@@ -133,6 +133,7 @@ defmodule Icebreaker.Accounts do
 
   """
   def get_location!(id), do: Repo.get!(Location, id)
+  def get_location_by_user!(user_id), do: Repo.get_by!(Location, user_id: user_id)
 
   @doc """
   Creates a location.
@@ -146,8 +147,8 @@ defmodule Icebreaker.Accounts do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_location(attrs \\ %{}) do
-    %Location{}
+  def create_location(user, attrs \\ %{}) do
+    %Location{user: user}
     |> Location.changeset(attrs)
     |> Repo.insert()
   end
@@ -170,21 +171,21 @@ defmodule Icebreaker.Accounts do
     |> Repo.update()
   end
 
-  @doc """
-  Deletes a location.
+  # @doc """
+  # Deletes a location.
 
-  ## Examples
+  # ## Examples
 
-      iex> delete_location(location)
-      {:ok, %Location{}}
+  #     iex> delete_location(location)
+  #     {:ok, %Location{}}
 
-      iex> delete_location(location)
-      {:error, %Ecto.Changeset{}}
+  #     iex> delete_location(location)
+  #     {:error, %Ecto.Changeset{}}
 
-  """
-  def delete_location(%Location{} = location) do
-    Repo.delete(location)
-  end
+  # """
+  # def delete_location(%Location{} = location) do
+  #   Repo.delete(location)
+  # end
 
   @doc """
   Returns an `%Ecto.Changeset{}` for tracking location changes.

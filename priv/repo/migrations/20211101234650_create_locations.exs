@@ -9,8 +9,8 @@ defmodule Icebreaker.Repo.Migrations.CreateLocations do
     end
 
     execute("CREATE EXTENSION IF NOT EXISTS postgis;")
-    execute("SELECT AddGeometryColumn ('locations','init_coords',4326,'POINTZ',3);")
-    execute("SELECT AddGeometryColumn ('locations','coords',4326,'POINTZ',3);")
+    execute("SELECT AddGeometryColumn ('locations','init_coords',4326,'POINT',2);")
+    execute("SELECT AddGeometryColumn ('locations','coords',4326,'POINT',2);")
 
     # Once a GIS data table exceeds a few thousand rows, you will want to build an index to speed up spatial searches of the data
     # Syntax - CREATE INDEX [indexname] ON [tablename] USING GIST ( [geometryfield] );

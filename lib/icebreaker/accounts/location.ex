@@ -4,6 +4,8 @@ defmodule Icebreaker.Accounts.Location do
 
   schema "locations" do
     belongs_to :user, Icebreaker.Accounts.User
+    field :init_coords, Geo.PostGIS.Geometry
+    field :coords, Geo.PostGIS.Geometry
 
     timestamps()
   end

@@ -1,5 +1,6 @@
 defmodule IcebreakerWeb.Api.UserController do
   use IcebreakerWeb, :controller
+
   alias Icebreaker.Accounts
   alias Icebreaker.Base.{Sms, Token, Guardian, Rekognition}
   alias Accounts.User
@@ -60,8 +61,6 @@ defmodule IcebreakerWeb.Api.UserController do
     with %User{} = user <- Guardian.Plug.current_resource(conn),
          {:ok, user} <- Accounts.update_user(user, %{name: name, birthdate: birthdate}),
          selfie_binary_data <- Base.decode64!(b64_selfie) do
-      # ExAws.Rekognition.create_collection("icebreaker") |> ExAws.request()
-
       {:ok, user} = Rekognition.search_or_index_face(user, selfie_binary_data)
 
       conn
