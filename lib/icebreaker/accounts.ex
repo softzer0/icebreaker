@@ -4,6 +4,7 @@ defmodule Icebreaker.Accounts do
   """
 
   import Ecto.Query, warn: false
+  import Geo.PostGIS
   alias Icebreaker.Repo
 
   alias Icebreaker.Accounts.User
@@ -203,5 +204,22 @@ defmodule Icebreaker.Accounts do
   def save_session(%User{} = user, token) do
     Ecto.build_assoc(user, :sessions, %{token: token})
     |> Repo.insert()
+  end
+
+  def list_users_in_vicinity(user_id) do
+    user_location = get_location_by_user!(user_id)
+    query = from user in User, join: location in Location, on: location.user_id == user.id and user.id != ^user_id
+    query = from [user, location] in query,
+            select: %{
+              id: user.id,
+              name: user.name,
+              last_selfie_id: user.last_selfie_id,
+              age: fragment("EXTRACT(YEAR FROM AGE(CAST(? AS DATE)))::int", user.birthdate),
+              last_active_ago: fragment("EXTRACT(EPOCH FROM (NOW() - ?))::int as last_active_ago", location.updated_at),
+              distance: fragment("? as distance", st_distance_in_meters(location.coords, ^user_location.coords))
+            },
+            where: fragment("EXTRACT(EPOCH FROM (NOW() - ?))::int", location.updated_at) < 24 * 60 * 60, # and st_distance_in_meters(location.coords, ^user_location.coords)) < 500,
+            order_by: [fragment("distance"), fragment("last_active_ago")]
+    Repo.all(query)
   end
 end
