@@ -154,6 +154,18 @@ defmodule Icebreaker.Accounts do
     |> Repo.insert()
   end
 
+  def check_if_range_exceeded(location, user) do
+    query = from loc in Location,
+            where: loc.id == ^location.id,
+            select: st_distance_in_meters(loc.coords, ^location.init_coords) <= 500
+    unless Repo.one!(query) do
+        {:ok, _} = update_user(user, %{exceeded_range: true})
+        true
+    else
+      false
+    end
+  end
+
   @doc """
   Updates a location.
 
@@ -166,10 +178,11 @@ defmodule Icebreaker.Accounts do
       {:error, %Ecto.Changeset{}}
 
   """
-  def update_location(%Location{} = location, attrs) do
-    location
+  def update_location(%Location{} = location, attrs, %User{} = user) do
+    {:ok, location} = location
     |> Location.changeset(attrs)
     |> Repo.update()
+    {:ok, location, check_if_range_exceeded(location, user)}
   end
 
   # @doc """
@@ -208,17 +221,20 @@ defmodule Icebreaker.Accounts do
 
   def list_users_in_vicinity(user_id) do
     user_location = get_location_by_user!(user_id)
-    query = from user in User, join: location in Location, on: location.user_id == user.id and user.id != ^user_id
+    query = from user in User, join: location in Location,
+            on: location.user_id == user.id and user.id != ^user_id
     query = from [user, location] in query,
             select: %{
               id: user.id,
               name: user.name,
               last_selfie_id: user.last_selfie_id,
               age: fragment("EXTRACT(YEAR FROM AGE(CAST(? AS DATE)))::int", user.birthdate),
-              last_active_ago: fragment("EXTRACT(EPOCH FROM (NOW() - ?))::int as last_active_ago", location.updated_at),
-              distance: fragment("? as distance", st_distance_in_meters(location.coords, ^user_location.coords))
+              last_active_ago: fragment("EXTRACT(EPOCH FROM (NOW() - ?))::int AS last_active_ago", location.updated_at),
+              distance: fragment("? AS distance", st_distance_in_meters(location.coords, ^user_location.coords))
             },
-            where: fragment("EXTRACT(EPOCH FROM (NOW() - ?))::int", location.updated_at) < 24 * 60 * 60, # and st_distance_in_meters(location.coords, ^user_location.coords)) < 500,
+            where:
+              fragment("EXTRACT(EPOCH FROM (NOW() - ?))::int", location.updated_at) < 24 * 60 * 60,
+              # and st_distance_in_meters(location.coords, ^user_location.coords)) <= 500,
             order_by: [fragment("distance"), fragment("last_active_ago")]
     Repo.all(query)
   end

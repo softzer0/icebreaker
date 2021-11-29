@@ -5,6 +5,8 @@ defmodule IcebreakerWeb.Api.UserController do
   alias Icebreaker.Base.{Sms, Token, Guardian, Rekognition}
   alias Accounts.User
 
+  import IcebreakerWeb.Controllers.Plug
+
   require Logger
 
   action_fallback IcebreakerWeb.FallbackController
@@ -57,12 +59,12 @@ defmodule IcebreakerWeb.Api.UserController do
     end
   end
 
-  def change_user_data(conn, %{"name" => name, "birthdate" => birthdate, "selfie" => b64_selfie}) do
-    with %User{} = user <- Guardian.Plug.current_resource(conn),
-         {:ok, user} <- Accounts.update_user(user, %{name: name, birthdate: birthdate}),
-         selfie_binary_data <- Base.decode64!(b64_selfie) do
-      {:ok, user} = Rekognition.search_or_index_face(user, selfie_binary_data)
+  plug :if_range_exceeded when action in [:change_user_data]
 
+  def change_user_data(conn, %{"name" => name, "birthdate" => birthdate} = data) do
+    with %User{} = user <- conn.assigns[:user],
+         {:ok, user} <- Accounts.update_user(user, %{name: name, birthdate: birthdate}),
+         {:ok, user} <- change_selfie(user, Map.get(data, "selfie")) do
       conn
       |> render("show.json", %{user: user})
     else
@@ -70,5 +72,14 @@ defmodule IcebreakerWeb.Api.UserController do
         conn
         |> json(%{error: "Invalid data provided"})
     end
+  end
+
+  defp change_selfie(%User{} = user, nil) do
+    {:ok, user}
+  end
+
+  defp change_selfie(%User{} = user, b64_selfie) do
+    selfie_binary_data = Base.decode64!(b64_selfie)
+    Rekognition.search_or_index_face(user, selfie_binary_data)
   end
 end

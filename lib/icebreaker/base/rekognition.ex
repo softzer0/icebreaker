@@ -33,6 +33,6 @@ defmodule Icebreaker.Base.Rekognition do
     )
     |> ExAws.request()
 
-    Accounts.update_user(user, %{last_selfie_id: selfie_id})
+    Accounts.update_user(user, %{last_selfie_id: selfie_id, exceeded_range: false})
   end
 end
