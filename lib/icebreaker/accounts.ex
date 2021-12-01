@@ -8,6 +8,7 @@ defmodule Icebreaker.Accounts do
   alias Icebreaker.Repo
 
   alias Icebreaker.Accounts.User
+  alias Icebreaker.Accounts.Nudge
 
   @doc """
   Returns the list of users.
@@ -237,5 +238,19 @@ defmodule Icebreaker.Accounts do
               # and st_distance_in_meters(location.coords, ^user_location.coords)) <= 500,
             order_by: [fragment("distance"), fragment("last_active_ago")]
     Repo.all(query)
+  end
+
+  def get_nudge_by_user(user_id), do:
+    Repo.one(
+      from nudge in Nudge,
+      where: (nudge.from == ^user_id or nudge.to == ^user_id) and
+             (^NaiveDateTime.utc_now() <= datetime_add(nudge.sent, 1, "minute") or nudge.not_delivered == -1)
+    )
+
+  def send_nudge(from_user, to_user_id) do
+    data = %{sent: NaiveDateTime.utc_now()}
+    %Nudge{from: from_user.id, to: to_user_id}
+    |> Nudge.changeset(data)
+    |> Repo.insert(conflict_target: [:from, :to], on_conflict: [set: [sent: data[:sent]], inc: [not_delivered: 1]])
   end
 end

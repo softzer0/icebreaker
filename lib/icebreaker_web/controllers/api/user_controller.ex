@@ -74,9 +74,7 @@ defmodule IcebreakerWeb.Api.UserController do
     end
   end
 
-  defp change_selfie(%User{} = user, nil) do
-    {:ok, user}
-  end
+  defp change_selfie(%User{} = user, nil), do: {:ok, user}
 
   defp change_selfie(%User{} = user, b64_selfie) do
     selfie_binary_data = Base.decode64!(b64_selfie)

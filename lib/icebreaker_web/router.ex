@@ -1,8 +1,6 @@
 defmodule IcebreakerWeb.Router do
   use IcebreakerWeb, :router
 
-  # TODO: Add Guardian pipeline
-
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
@@ -51,6 +49,8 @@ defmodule IcebreakerWeb.Router do
 
     post "/locations", LocationController, :create
     patch "/locations", LocationController, :update
+
+    post "/send_nudge", NudgeController, :send_nudge
   end
 
   # Enables LiveDashboard only for development
