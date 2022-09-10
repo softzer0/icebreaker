@@ -35,6 +35,7 @@ defmodule IcebreakerWeb.Api.LocationController do
   end
 
   plug :if_range_exceeded when action in [:update]
+  plug :if_being_nudged when action in [:update]
 
   def update(conn, %{"location" => location_params}) do
     with %User{} = user <- conn.assigns[:user],
